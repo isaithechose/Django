@@ -1,0 +1,46 @@
+<!-- templates/home/index.html -->
+
+{% extends "home/base.html" %}
+{% load static %}
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+    <!-- Imagen destacada -->
+    <div class="jumbotron text-center">
+
+    </div>
+
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container my-4">
+        <section class="text-center">
+            <img src="{% static 'images/logo.png' %}" alt="Sorteos Chiwas" width="200" class="my-3">
+            <h1>PREGUNTAS FRECUENTES</h1>
+            <hr>
+            <div class="text-left mt-4">
+                <h4>¿CÓMO SE ELIGE A LOS GANADORES?</h4>
+                <p>Todas nuestras rifas se realizan en base a la <a href="https://lotenal.gob.mx/Home/Resultados">Lotería Nacional para la Asistencia Pública mexicana</a>.</p>
+                <p>El ganador de Sorteos Chiwas será el participante cuyo número de boleto coincida con las últimas cifras del primer premio del sorteo de la Lotería Nacional.</p>
+
+                <h4>¿QUÉ SUCEDE CUANDO EL NÚMERO GANADOR ES UN BOLETO NO VENDIDO?</h4>
+                <p>Se elige un nuevo ganador realizando el mismo dinámico en otra fecha cercana (de acuerdo a la nueva fecha).</p>
+                <p>Este último significa que habrá más oportunidades de ganar con tu mismo boleto.</p>
+
+                <h4>¿DÓNDE SE PUBLICA A LOS GANADORES?</h4>
+                <p>En nuestra página oficial de Facebook <a href="https://www.facebook.com/profile.php?id=61564176612545">Sorteos Lucky juarez</a> puedes encontrar todas y cada una de nuestras sorteos anteriores, así como las transmisiones en vivo de Lotería Nacional y las entregas de premios a los ganadores.</p>
+                <p>Encuentra las transmisiones en vivo de nuestros sorteos en nuestra página de Facebook los días indicados a las 20:00 hrs CDMX.</p>
+            </div>
+        </section>
+        <section class="text-center mt-5">
+            <h2>ACERCA DE NOSOTROS</h2>
+            <hr>
+            <p>Sorteos entre amigos en base a Lotería Nacional</p>
+            <p>¡Arriesga poco y gana mucho!</p>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+
+
+{% endblock %}
