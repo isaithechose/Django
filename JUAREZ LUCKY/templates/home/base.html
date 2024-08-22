@@ -1,7 +1,5 @@
 <!-- templates/base.html -->
 {% load static %}
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +8,19 @@
     <title>{% block title %}Mi Proyecto Django{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <style>
+        .cover-image {
+            background-image: url("{% static 'images/portada.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            height: 1200px; /* Puedes ajustar la altura */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <!-- Encabezado con logo y navegación -->
@@ -24,20 +35,19 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'index' %}">Inicio</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'premios' %}">Premios</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'Metodos_de_pago' %}">Métodos de pago</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'lista' %}">Reservar Números</a>
-    </li>
-</ul>
-
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'premios' %}">Premios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'Metodos_de_pago' %}">Métodos de pago</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'lista' %}">Reservar Números</a>
+                        </li>
+                    </ul>
                 </div>
             </nav>
         </div>
@@ -45,13 +55,15 @@
 
     <!-- Contenido principal -->
     <main class="container my-4">
+        <div class="cover-image">
+        </div>
         {% block content %}
         {% endblock %}
     </main>
 
     <!-- Pie de página -->
     <footer class="bg-light text-center py-3">
-        <p>&copy; 2024 Juarezlucky . Todos los derechos reservados.</p>
+        <p>&copy; 2024 Juarezlucky. Todos los derechos reservados.</p>
     </footer>
 
     <!-- Scripts de Bootstrap -->

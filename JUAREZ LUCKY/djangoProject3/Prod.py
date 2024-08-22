@@ -29,10 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#tb7=ist$co@qf9hivmamy2(&z&emvh_ldk!3oj70i7^bp4h2*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
-
 
 
 # Application definition
@@ -86,15 +85,14 @@ WSGI_APPLICATION = 'djangoProject3.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Ajusta el motor aquí
         'NAME': 'luckyjuarez2024',
-        'USER': 'admin2024',
+        'USER': 'ADMIN2024',
         'PASSWORD': '2024LUCKYJ',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-
 
 
 # Password validation
