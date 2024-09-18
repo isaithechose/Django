@@ -1,0 +1,75 @@
+<!-- templates/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Proyecto Django{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="{% static 'images/favicon.PNG' %}" type="image/png">
+    <style>
+        .cover-image {
+            background-image: url("{% static 'images/portada2.jpg' %}");
+            background-size: contain; /* Cambiado a contain para mantener la imagen completa visible */
+            background-position: center;
+            background-repeat: no-repeat; /* Evita que la imagen se repita */
+            height: 100vh; /* Altura del 100% del viewport */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;       
+
+        /* Hacer que las imágenes sean responsivas */
+        .logo img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado con logo y navegación -->
+    <header class="bg-light">
+        <div class="container d-flex justify-content-between align-items-center py-3">
+            <div class="logo">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="img-fluid" width="175">
+            </div>
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'premios' %}">Premios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'Metodos_de_pago' %}">Métodos de pago</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'lista' %}">Reservar Números</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container my-4">
+        <div class="cover-image">
+        </div>
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <!-- Incluye scripts de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

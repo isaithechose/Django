@@ -1,0 +1,371 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Reservar Números</h1>
+    {% if errores %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for error in errores %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <form id="reservar-form" method="post" action="{% url 'lista' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_nombre">Nombre:</label>
+            <input type="text" id="id_nombre" name="nombre" required class="form-control" style="width: 20%; display: inline-block;">
+            <label for="id_apellidos" style="margin-left: 20px;">Apellidos:</label>
+            <input type="text" id="id_apellidos" name="apellidos" required class="form-control" style="width: 20%; display: inline-block;">
+            <label for="id_numero_celular" style="margin-left: 20px;">Número Celular:</label>
+            <input type="text" id="id_numero_celular" name="numero_celular" required class="form-control" pattern="\d{10}" title="Debe ser un número de 10 dígitos" style="width: 20%; display: inline-block;">
+        </div>
+        <div class="form-group">
+            <label for="id_cantidad">Cantidad a apartar:</label>
+            <input type="number" id="id_cantidad" name="cantidad" min="1" max="6" required class="form-control" style="width: 100px; display: inline-block;">
+        </div>
+        <div id="numeros-container" class="d-flex flex-wrap"></div>
+        <button type="submit" class="btn btn-primary">Reservar</button>
+    </form>
+
+    <hr>
+
+    <h2>Número Aleatorio</h2>
+    <label for="cantidad-numeros">Generar:</label>
+    <select id="cantidad-numeros" class="form-control" style="width: 100px; display: inline-block;">
+        <option value="6">6</option>
+    </select>
+    <button id="generar-numero-btn" class="btn btn-secondary">Generar Números Aleatorios</button>
+    <div id="gif-container" style="display:none;">
+        <img src="{% static 'images/loading.gif' %}" alt="Loading..." width="300">
+    </div>
+    <div id="numero-aleatorio-container" style="display:none;">
+        <p>Números aleatorios generados:</p>
+        <div id="numeros-aleatorios"></div>
+        <button id="reservar-aleatorio-btn" class="btn btn-success">Reservar estos números</button>
+    </div>
+
+    <hr>
+
+    <h2>Números Disponibles</h2>
+    <div class="numeros-container">
+        <div class="row" id="numeros-disponibles">
+            {% for i in numeros %}
+            <div class="col-1 p-1">
+                {% if i in numeros_reservados %}
+                <div class="bg-dark text-white text-center p-2">{{ i|stringformat:"05d" }}</div>
+                {% else %}
+                <div class="bg-light text-dark text-center p-2 numero-disponible" data-numero="{{ i }}" style="cursor: pointer;">{{ i|stringformat:"05d" }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Buscador de Número -->
+    <h2>Buscar Estado de Número</h2>
+    <div class="form-group">
+ <h2>Números Disponibles</h2>
+    <div class="numeros-container">
+        <div class="row" id="numeros-disponibles">
+            {% for i in numeros %}
+            <div class="col-1 p-1">
+                {% if i in numeros_reservados %}
+                <div class="bg-dark text-white text-center p-2">{{ i|stringformat:"05d" >                {% else %}
+                <div class="bg-light text-dark text-center p-2 numero-disponible" data-n>                {% endif %}
+            </div>
+            {% endfor %}
+        </div>        <label for="buscar-numero">Número a buscar:</label>
+        <input type="text" id="buscar-numero" class="form-control" placeholder="Ingrese número" style="width: 200px; display: inline-block;">
+        <button id="buscar-btn" class="btn btn-info">Buscar</button>
+    </div>
+    <div id="resultado-busqueda" style="margin-top: 20px;"></div>
+
+    <hr>
+
+    <!-- Verificador de Números Pagados -->
+    <h2>Verificar Números Pagados y Reservados</h2>
+    <div class="form-group">
+        <label for="telefono">Número de Celular:</label>
+        <input type="text" id="telefono" class="form-control" placeholder="Ingrese su número celular" style="width: 200px; display: inline-block;">
+        <button id="verificar-pagados-btn" class="btn btn-info">Verificar</button>
+    </div>
+    <div id="resultado-pagados" style="margin-top: 20px;"></div>
+</div>
+
+<style>
+    .numeros-container {
+    	height: 200px;
+    	overflow-y: scroll;
+    	border: 1px solid #ddd;
+    	padding: 10px;
+    	background-color: #f9f9f9;
+    }
+
+     .numeros-disponibles {
+    	display: grid;
+    	grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); /* Ajusta la cantidad de columnas automáticamente */
+    	gap: 10px; /* Espacio entre los números */
+    	justify-content: center; /* Centrar el contenido */
+    }
+
+     .numero-item {
+    	text-align: center;
+    	border: 1px solid #ccc;
+    	padding: 5px;
+    	box-sizing: border-box;
+    	background-color: #ffffff;
+    	border-radius: 5px;
+    	cursor: pointer;
+    	user-select: none;
+    }
+
+
+    .form-control.numero-input {
+        width: 100px;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .form-group-inline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .form-group-inline label {
+        margin-right: 10px;
+    }
+
+    .form-group-inline div {
+        margin-right: 20px;
+    }
+	/* Asegura que el contenedor se ajuste al tamaño de pantalla pequeño */
+    @media (max-width: 600px) {
+        .numero-item {
+            flex: 0 1 20px; /* Ajusta el ancho de los números en pantallas pequeñas */
+        }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var cantidadInput = document.getElementById('id_cantidad');
+        var numerosContainer = document.getElementById('numeros-container');
+        var numerosDisponibles = document.querySelectorAll('.numero-disponible');
+        var numerosReservados = {{ numeros_reservados|safe }};
+        var seleccionados = new Set();
+
+        var gifContainer = document.getElementById('gif-container');
+        var numeroAleatorioContainer = document.getElementById('numero-aleatorio-container');
+        var numerosAleatoriosText = document.getElementById('numeros-aleatorios');
+        var generarBtn = document.getElementById('generar-numero-btn');
+        var reservarAleatorioBtn = document.getElementById('reservar-aleatorio-btn');
+        var cantidadNumeros = document.getElementById('cantidad-numeros');
+
+        generarBtn.addEventListener('click', function () {
+            // Desactivar el botón mientras se generan los números
+            generarBtn.disabled = true;
+            gifContainer.style.display = 'block';
+            numeroAleatorioContainer.style.display = 'none';
+
+            var cantidad = parseInt(cantidadNumeros.value);
+
+            setTimeout(function () {
+                numerosAleatoriosText.innerHTML = '';
+
+                var promises = [];
+                for (var i = 0; i < cantidad; i++) {
+                    promises.push(
+                        fetch('{% url "generar_numero_aleatorio" %}')
+                            .then(response => response.json())
+                            .then(data => {
+                                var numeroAleatorio = data.numero;
+
+                                // Asegurarse de que el número generado no esté ya seleccionado ni reservado
+                                while (seleccionados.has(numeroAleatorio) || numerosReservados.includes(numeroAleatorio)) {
+                                    numeroAleatorio = generarNuevoNumero();
+                                }
+
+                                seleccionados.add(numeroAleatorio);
+                                // Asegúrate de que el número se muestra correctamente
+                                numerosAleatoriosText.innerHTML += `<span>${numeroAleatorio}</span><br>`;
+                            })
+                    );
+                }
+
+                Promise.all(promises).then(() => {
+                    // Reactivar el botón para permitir otra generación
+                    generarBtn.disabled = false;
+                    gifContainer.style.display = 'none';
+                    numeroAleatorioContainer.style.display = 'block';
+                                }).catch(error => {
+                    console.error('Error generando los números:', error);
+                    // Reactivar el botón en caso de error
+                    generarBtn.disabled = false;
+                    gifContainer.style.display = 'none';
+                });
+
+            }, 2000);  // Simulación del tiempo de espera
+        });
+
+        reservarAleatorioBtn.addEventListener('click', function () {
+            seleccionados.forEach(numero => {
+                if (!seleccionados.has(numero)) {
+                    seleccionados.add(numero);
+                }
+            });
+            actualizarCantidad();
+            actualizarNumerosContainer(seleccionados.size);
+        });
+
+        function generarNuevoNumero() {
+            // Simula la generación de un nuevo número aleatorio dentro del rango permitido y que no esté reservado
+            var nuevoNumero;
+            do {
+                nuevoNumero = Math.floor(Math.random() * 60001);  // rango de 0 a 60000
+            } while (seleccionados.has(nuevoNumero) || numerosReservados.includes(nuevoNumero));
+            return nuevoNumero;
+        }
+
+        cantidadInput.addEventListener('change', function () {
+            var cantidad = parseInt(cantidadInput.value);
+            if (cantidad + seleccionados.size > 6) {
+                alert("No puedes apartar más de 6 números.");
+                cantidadInput.value = 6 - seleccionados.size;
+                return;
+            }
+            actualizarNumerosContainer(cantidad);
+        });
+
+        numerosDisponibles.forEach(function (div) {
+            div.addEventListener('click', function () {
+                var numero = parseInt(this.getAttribute('data-numero'));
+                if (seleccionados.size >= 6 && !seleccionados.has(numero)) {
+                    alert("No puedes apartar más de 6 números.");
+                    return;
+                }
+                if (seleccionados.has(numero)) {
+                    seleccionados.delete(numero);
+                    this.classList.remove('bg-primary', 'text-white');
+                    this.classList.add('bg-light', 'text-dark');
+                } else {
+                    seleccionados.add(numero);
+                    this.classList.remove('bg-light', 'text-dark');
+                    this.classList.add('bg-primary', 'text-white');
+                }
+                actualizarCantidad();
+                actualizarNumerosContainer(seleccionados.size);
+            });
+        });
+
+        function actualizarCantidad() {
+            cantidadInput.value = seleccionados.size;
+        }
+
+        function actualizarNumerosContainer(cantidad) {
+            numerosContainer.innerHTML = '';
+            if (cantidad > 0) {
+                var iter = seleccionados.values();
+                for (var i = 0; i < cantidad; i++) {
+                    var div = document.createElement('div');
+                    div.classList.add('form-group-inline');
+                    var input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = `id_numero_${i}`;
+                    input.name = `numero_${i}`;
+                    input.classList.add('form-control', 'numero-input');
+                    input.required = true;
+                    input.min = 0;
+
+                    var label = document.createElement('label');
+                    label.htmlFor = `id_numero_${i}`;
+                    label.innerText = `Número ${i + 1}:`;
+
+                    if (i < seleccionados.size) {
+                        var numero = iter.next().value;
+                        input.value = numero;
+                    }
+
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    numerosContainer.appendChild(div);
+                }
+            }
+        }
+
+        // Función para buscar el estado de un número
+        document.getElementById('buscar-btn').addEventListener('click', function () {
+            var numeroABuscar = parseInt(document.getElementById('buscar-numero').value);
+            var resultadoBusqueda = document.getElementById('resultado-busqueda');
+
+            if (isNaN(numeroABuscar)) {
+                resultadoBusqueda.textContent = "Por favor, ingrese un número válido.";
+                return;
+            }
+
+            if (numerosReservados.includes(numeroABuscar)) {
+                resultadoBusqueda.innerHTML = `<p class="text-danger">El número ${numeroABuscar} ya está reservado.</p>`;
+            } else {
+                resultadoBusqueda.innerHTML = `<p class="text-success">El número ${numeroABuscar} está disponible.</p>`;
+            }
+        });
+
+        // Función para verificar números pagados y reservados
+        document.getElementById('verificar-pagados-btn').addEventListener('click', function () {
+            var telefono = document.getElementById('telefono').value;
+            var resultadoPagados = document.getElementById('resultado-pagados');
+
+            if (!telefono.match(/^\d{10}$/)) {
+                resultadoPagados.textContent = "Por favor, ingrese un número de celular válido.";
+                return;
+            }
+
+            fetch(`{% url "verificar_numeros_pagados" %}?telefono=${telefono}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.numeros_pagados.length > 0 || data.numeros_reservados.length > 0) {
+                        resultadoPagados.innerHTML = "<p class='text-success'>Números encontrados:</p><ul>";
+                        if (data.numeros_pagados.length > 0) {
+                            resultadoPagados.innerHTML += "<li class='text-success'>Números pagados:</li>";
+                            data.numeros_pagados.forEach(numero => {
+                                resultadoPagados.innerHTML += `<li class='text-success'>${numero}</li>`;
+                            });
+                        }
+                        if (data.numeros_reservados.length > 0) {
+                            resultadoPagados.innerHTML += "<li class='text-danger'>Números reservados:</li>";
+                            data.numeros_reservados.forEach(numero => {
+                                resultadoPagados.innerHTML += `<li class='text-danger'>${numero}</li>`;
+                            });
+                        }
+                        resultadoPagados.innerHTML += "</ul>";
+                    } else {
+                        resultadoPagados.innerHTML = "<p class='text-danger'>No se encontraron números asociados a este teléfono.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error verificando los números:', error);
+                    resultadoPagados.innerHTML = "<p class='text-danger'>Error verificando los números.</p>";
+                });
+        });
+
+        function marcarNumeroSeleccionado(numero) {
+            // Esta función marca el número generado aleatoriamente en la lista de números disponibles
+            numerosDisponibles.forEach(function (div) {
+                if (parseInt(div.getAttribute('data-numero')) === numero) {
+                    div.classList.remove('bg-light', 'text-dark');
+                    div.classList.add('bg-primary', 'text-white');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}
+
